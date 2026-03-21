@@ -55,6 +55,11 @@ fi
 
 scp "$SCRIPT_DIR/.env" "$HOST":~/
 
+# If already running, just reattach
+if ssh "$HOST" "tmux has-session -t maxsat 2>/dev/null"; then
+  exec ssh -t "$HOST" 'tmux attach -t maxsat'
+fi
+
 # Provision and launch agents on remote
 ssh "$HOST" "bash -s $(printf '%q %q %q %q' "$NUM_AGENTS" "$REPO_URL" "$GIT_USER_NAME" "$GIT_USER_EMAIL")" <<'REMOTE'
 set -e
@@ -111,11 +116,6 @@ for i in $(seq 1 "$NUM_AGENTS"); do
   mkdir -p "$REPO_DIR/benchmarks/max-sat-2024"
   ln -sf "$BENCH_DIR/max-sat-2024/mse24-anytime-weighted" "$REPO_DIR/benchmarks/max-sat-2024/mse24-anytime-weighted"
 done
-
-# If already running, just reattach
-if tmux has-session -t maxsat 2>/dev/null; then
-  exit 0
-fi
 
 # Install tmux if not present
 if ! command -v tmux &> /dev/null; then
