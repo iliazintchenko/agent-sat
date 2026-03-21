@@ -92,7 +92,7 @@ if [ ! -d "$BENCH_DIR/max-sat-2024/mse24-anytime-weighted" ]; then
   curl -L -o /tmp/mse24.zip https://www.cs.helsinki.fi/group/coreo/MSE2024-instances/mse24-anytime-weighted.zip
   unzip -o /tmp/mse24.zip -d "$BENCH_DIR/max-sat-2024/"
   cd "$BENCH_DIR/max-sat-2024"
-  for f in *.wcnf.xz; do xz -d "$f" && mv "${f%.xz}" mse24-anytime-weighted/; done
+  for f in *.wcnf.xz; do [ -e "$f" ] || continue; xz -d "$f" && mv "${f%.xz}" mse24-anytime-weighted/; done
   rm -f /tmp/mse24.zip
 fi
 
