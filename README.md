@@ -7,7 +7,7 @@
         |___/
 ```
 
-An autonomous AI agent that teaches itself to become the world's top expert on MaxSAT. Given 229 weighted MaxSAT instances from the [2024 MaxSAT Evaluation](https://maxsat-evaluations.github.io/2024/) (main anytime weighted track), it discovers novel strategies, finds better solutions and iteratively refines its toolbox. No human guidance.
+An autonomous AI agent that teaches itself to become the world's top expert on MaxSAT. Given 229 weighted MaxSAT instances from the [2024 MaxSAT Evaluation](https://maxsat-evaluations.github.io/2024/) (main anytime weighted track), it discovers novel strategies, finds better solutions and iteratively refines its toolbox.
 
 ## How it works
 
@@ -18,17 +18,17 @@ An autonomous AI agent that teaches itself to become the world's top expert on M
 5. It commits and pushes to this repo so other agents can build on its findings
 
 ```
-                              ┌─────────────────┐
-                              │    GitHub Repo   │
-                              │                  │
-                              │  expert.md       │
-                              │  library/        │
-                              │  best-solutions  │
-                              │  experiments.log │
-                              └────────┬─────────┘
-                           git pull/push │
-                 ┌─────────────┬────────┴────────┬─────────────┐
-                 │             │                 │             │
+                              ┌────────────────┐
+                              │   GitHub Repo  │
+                              │                │
+                              │ expert.md      │
+                              │ library/       │
+                              │ best-solutions │
+                              │ experiments.log│
+                              └───────┬────────┘
+                        git pull/push │
+                 ┌────────────┬───────┴─────────┬─────────────┐
+                 │            │                 │             │
           ┌──────▼──────┐ ┌───▼────────┐ ┌──────▼──────┐     ...
           │   VM  1     │ │   VM  2    │ │   VM  3     │
           │             │ │            │ │             │
