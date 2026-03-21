@@ -12,7 +12,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 HOST=""
-NUM_AGENTS="${NUM_AGENTS:-3}"
+NUM_AGENTS="${NUM_AGENTS:-}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -21,6 +21,12 @@ while [[ $# -gt 0 ]]; do
     *) echo "Unknown option: $1"; exit 1 ;;
   esac
 done
+
+# When run locally (not piped over SSH), require --host and --agents
+if [ -z "$NUM_AGENTS" ]; then
+  echo "Usage: $0 --host <user@host> --agents <n>"
+  exit 1
+fi
 
 REPO_URL="${REPO_URL:-$(git -C "$SCRIPT_DIR" remote get-url origin)}"
 GIT_USER_NAME="${GIT_USER_NAME:-$(git config user.name)}"
