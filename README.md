@@ -13,19 +13,19 @@ An autonomous AI agent that teaches itself to become the world's top expert on M
 
 1. An AI agent (e.g. Claude Code) reads `program.md` for instructions
 2. It reads `expert.md` for accumulated knowledge from prior runs
-3. It reads the library for the tools it has so far
+3. It reads `library/` for the tools it has so far
 4. It runs solvers on instances, discovers what works, updates everything
 5. It commits and pushes to this repo so other agents can build on its findings
 
 ```
-                              ┌────────────────┐
-                              │   GitHub Repo  │
-                              │                │
-                              │ expert.md      │
-                              │ library/       │
-                              │ best-solutions │
-                              │ experiments.log│
-                              └───────┬────────┘
+                              ┌────────────────────┐
+                              │     GitHub Repo    │
+                              │                    │
+                              │ expert.md          │
+                              │ library/           │
+                              │ best-solutions.bin │
+                              │ experiments.log    │
+                              └───────┬────────────┘
                         git pull/push │
                  ┌────────────┬───────┴─────────┬─────────────┐
                  │            │                 │             │
