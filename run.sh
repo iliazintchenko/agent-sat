@@ -12,7 +12,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 HOST=""
-NUM_AGENTS=3
+NUM_AGENTS="${NUM_AGENTS:-3}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -66,7 +66,6 @@ cat > ~/.claude/settings.json <<'EOF'
 {"permissions":{"defaultMode":"bypassPermissions"},"model":"opus[1m]","effortLevel":"max","skipDangerousModePermissionPrompt":true}
 EOF
 
-NUM_AGENTS="${NUM_AGENTS:-3}"  # passed via env from SSH caller
 BENCH_DIR="/tmp/agent-sat-benchmarks"
 
 # Download benchmarks once into a shared location
