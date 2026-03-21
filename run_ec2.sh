@@ -33,8 +33,8 @@ if [ -f "$SCRIPT_DIR/.env" ]; then
 fi
 
 REPO_URL="${REPO_URL:-$(git -C "$SCRIPT_DIR" remote get-url origin)}"
-GIT_USER_NAME="${GIT_USER_NAME:-$(git config user.name)}"
-GIT_USER_EMAIL="${GIT_USER_EMAIL:-$(git config user.email)}"
+GIT_USER_NAME="${GIT_USER_NAME:-$(git config user.name || true)}"
+GIT_USER_EMAIL="${GIT_USER_EMAIL:-$(git config user.email || true)}"
 
 # Convert SSH URL to HTTPS and inject token for authenticated access on remote
 if [[ "$REPO_URL" == git@github.com:* ]]; then
