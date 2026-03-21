@@ -27,6 +27,11 @@ if [ -z "$HOST" ] || [ -z "$NUM_AGENTS" ]; then
   exit 1
 fi
 
+# Source .env locally so GITHUB_ACCESS_TOKEN is available for URL rewriting
+if [ -f "$SCRIPT_DIR/.env" ]; then
+  set -a; source "$SCRIPT_DIR/.env"; set +a
+fi
+
 REPO_URL="${REPO_URL:-$(git -C "$SCRIPT_DIR" remote get-url origin)}"
 GIT_USER_NAME="${GIT_USER_NAME:-$(git config user.name)}"
 GIT_USER_EMAIL="${GIT_USER_EMAIL:-$(git config user.email)}"
@@ -67,11 +72,10 @@ NUM_AGENTS="$1"; REPO_URL="$2"; GIT_USER_NAME="$3"; GIT_USER_EMAIL="$4"
 
 source ~/.env
 export ANTHROPIC_API_KEY="$CLAUDE_CODE_API_KEY"
+export PATH="$HOME/.local/bin:$PATH"
 
-# Install system dependencies
-if ! command -v python3.14 &> /dev/null || ! command -v git &> /dev/null; then
-  sudo dnf install -y python3.14 python3.14-pip git unzip
-fi
+# Install system dependencies (dnf is idempotent, always run to ensure nothing is missing)
+sudo dnf install -y python3.14 python3.14-pip git unzip tmux jq
 
 # Install Claude Code if not present
 if ! command -v claude &> /dev/null; then
@@ -88,6 +92,13 @@ python3.14 -m pip install -q python-sat numpy 2>/dev/null || true
 # Claude Code settings
 mkdir -p ~/.claude
 printf '%s\n' '{"permissions":{"defaultMode":"bypassPermissions"},"model":"opus[1m]","effortLevel":"max","skipDangerousModePermissionPrompt":true}' > ~/.claude/settings.json
+
+# Ensure ANTHROPIC_API_KEY is set for all future shells (including tmux panes)
+grep -q 'ANTHROPIC_API_KEY' ~/.bashrc 2>/dev/null || cat >> ~/.bashrc <<'BASHRC'
+source ~/.env 2>/dev/null
+export ANTHROPIC_API_KEY="$CLAUDE_CODE_API_KEY"
+export PATH="$HOME/.local/bin:$PATH"
+BASHRC
 
 BENCH_DIR="/tmp/agent-sat-benchmarks"
 
@@ -117,11 +128,6 @@ for i in $(seq 1 "$NUM_AGENTS"); do
   ln -sf "$BENCH_DIR/max-sat-2024/mse24-anytime-weighted" "$REPO_DIR/benchmarks/max-sat-2024/mse24-anytime-weighted"
 done
 
-# Install tmux if not present
-if ! command -v tmux &> /dev/null; then
-  sudo dnf install -y tmux
-fi
-
 # Launch tmux session — one window per agent
 for i in $(seq 1 "$NUM_AGENTS"); do
   REPO_DIR="/tmp/agent-sat-$i"
@@ -133,7 +139,7 @@ for i in $(seq 1 "$NUM_AGENTS"); do
     tmux new-window -t maxsat -n "agent-$i" \
       "cd $REPO_DIR && claude -p 'Read program.md and go.' --dangerously-skip-permissions --verbose --output-format stream-json 2>&1 | tee $LOG"
   fi
-  # Add monitoring panes: costs bottom-left, agent steps bottom-right
+  # Add monitoring panes: token usage bottom-left, agent steps bottom-right
   tmux split-window -v -t "maxsat:agent-$i" \
     "tail -f $LOG | jq -r 'select(.type==\"assistant\" and .message.usage) | .message.usage | \"in: \\(.input_tokens) cache: \\(.cache_read_input_tokens) out: \\(.output_tokens)\"'"
   tmux split-window -h -t "maxsat:agent-$i.1" \
