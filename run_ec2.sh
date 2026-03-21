@@ -3,7 +3,7 @@
 #   Instance ID: i-02d0c8c6970c9915f
 #   IP: 44.211.98.254
 #
-# Launch (or reattach):  ./run.sh --host ec2-user@44.211.98.254 --agents 3
+# Launch (or reattach):  ./run_ec2.sh --host ec2-user@44.211.98.254 --agents 3
 # Detach:                Ctrl-b d
 # Reattach:              ssh -t ec2-user@44.211.98.254 'tmux attach -t maxsat'
 # Switch agent windows:  Ctrl-b n (next) / Ctrl-b p (prev) / Ctrl-b <number>
