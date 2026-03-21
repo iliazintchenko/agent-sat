@@ -49,5 +49,5 @@ fi
 ssh "$HOST" "test -f ~/.env" 2>/dev/null || scp "$SCRIPT_DIR/.env" "$HOST":~/
 
 # Provision and launch agents on remote
-ssh "$HOST" "NUM_AGENTS=$NUM_AGENTS REPO_URL='$REPO_URL' GIT_USER_NAME='$GIT_USER_NAME' GIT_USER_EMAIL='$GIT_USER_EMAIL' bash -s" < "$SCRIPT_DIR/run_remote.sh"
+ssh "$HOST" "NUM_AGENTS=$NUM_AGENTS REPO_URL='$REPO_URL' GIT_USER_NAME='$GIT_USER_NAME' GIT_USER_EMAIL='$GIT_USER_EMAIL' bash -s" < "$SCRIPT_DIR/setup.sh"
 ssh -t "$HOST" 'tmux attach -t maxsat'

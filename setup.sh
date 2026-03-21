@@ -1,5 +1,5 @@
 #!/bin/bash
-# Runs on the EC2 instance — provisions dependencies, clones repos, launches agents in tmux.
+# Provisions the EC2 instance — installs dependencies, clones repos, launches agents in tmux.
 # Called by run.sh over SSH; not meant to be invoked directly.
 #
 # Expected env vars: NUM_AGENTS, REPO_URL, GIT_USER_NAME, GIT_USER_EMAIL
