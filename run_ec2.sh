@@ -53,7 +53,7 @@ if [ -f "$HOME/.claude.json" ]; then
   fi
 fi
 
-ssh "$HOST" "test -f ~/.env" 2>/dev/null || scp "$SCRIPT_DIR/.env" "$HOST":~/
+scp "$SCRIPT_DIR/.env" "$HOST":~/
 
 # Provision and launch agents on remote
 ssh "$HOST" "bash -s $(printf '%q %q %q %q' "$NUM_AGENTS" "$REPO_URL" "$GIT_USER_NAME" "$GIT_USER_EMAIL")" <<'REMOTE'
