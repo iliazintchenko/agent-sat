@@ -22,6 +22,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+REPO_URL="${REPO_URL:-$(git -C "$SCRIPT_DIR" remote get-url origin)}"
+GIT_USER_NAME="${GIT_USER_NAME:-$(git config user.name)}"
+GIT_USER_EMAIL="${GIT_USER_EMAIL:-$(git config user.email)}"
+
+# Ensure clone URL includes token for authenticated access on remote
+if [[ "$REPO_URL" == https://github.com/* && -n "${GITHUB_ACCESS_TOKEN:-}" && "$REPO_URL" != *@* ]]; then
+  REPO_URL="${REPO_URL/https:\/\/github.com/https://${GITHUB_ACCESS_TOKEN}@github.com}"
+fi
+
 if [ -n "$HOST" ]; then
   # Refresh API key from local Claude Code login if available
   if [ -f "$HOME/.claude.json" ]; then
@@ -34,7 +43,7 @@ if [ -n "$HOST" ]; then
   fi
   ssh "$HOST" "test -f ~/.env" 2>/dev/null || scp "$SCRIPT_DIR/.env" "$HOST":~/
   # Pipe the setup script, then attach to tmux
-  ssh "$HOST" "NUM_AGENTS=$NUM_AGENTS bash -s" < "$SCRIPT_DIR/run.sh"
+  ssh "$HOST" "NUM_AGENTS=$NUM_AGENTS REPO_URL='$REPO_URL' GIT_USER_NAME='$GIT_USER_NAME' GIT_USER_EMAIL='$GIT_USER_EMAIL' bash -s" < "$SCRIPT_DIR/run.sh"
   ssh -t "$HOST" 'tmux attach -t maxsat'
   exit 0
 fi
@@ -84,10 +93,10 @@ for i in $(seq 1 "$NUM_AGENTS"); do
   if [ -d "$REPO_DIR/.git" ]; then
     git -C "$REPO_DIR" pull
   else
-    git clone "https://${GITHUB_ACCESS_TOKEN}@github.com/iliazintchenko/agent-sat.git" "$REPO_DIR"
+    git clone "$REPO_URL" "$REPO_DIR"
   fi
-  git -C "$REPO_DIR" config user.name "Ilia Zintchenko"
-  git -C "$REPO_DIR" config user.email "iliazin@gmail.com"
+  [ -n "$GIT_USER_NAME" ] && git -C "$REPO_DIR" config user.name "$GIT_USER_NAME"
+  [ -n "$GIT_USER_EMAIL" ] && git -C "$REPO_DIR" config user.email "$GIT_USER_EMAIL"
   # Symlink shared benchmarks into each clone
   rm -rf "$REPO_DIR/benchmarks/max-sat-2024/mse24-anytime-weighted"
   mkdir -p "$REPO_DIR/benchmarks/max-sat-2024"
