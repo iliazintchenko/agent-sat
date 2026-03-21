@@ -1,3 +1,4 @@
+agent.log
 *.tar.xz
 benchmarks/*
 !benchmarks/max-sat-2024/
