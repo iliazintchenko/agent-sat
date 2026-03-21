@@ -33,8 +33,8 @@ if [ -f "$SCRIPT_DIR/.env" ]; then
 fi
 
 REPO_URL="${REPO_URL:-$(git -C "$SCRIPT_DIR" remote get-url origin)}"
-GIT_USER_NAME="${GIT_USER_NAME:-$(git config user.name || true)}"
-GIT_USER_EMAIL="${GIT_USER_EMAIL:-$(git config user.email || true)}"
+GIT_USER_NAME="$(git -C "$SCRIPT_DIR" config user.name)" || { echo "Error: git user.name not set. Run: git config user.name \"Your Name\""; exit 1; }
+GIT_USER_EMAIL="$(git -C "$SCRIPT_DIR" config user.email)" || { echo "Error: git user.email not set. Run: git config user.email \"you@example.com\""; exit 1; }
 
 # Convert SSH URL to HTTPS and inject token for authenticated access on remote
 if [[ "$REPO_URL" == git@github.com:* ]]; then
@@ -73,6 +73,9 @@ NUM_AGENTS="$1"; REPO_URL="$2"; GIT_USER_NAME="$3"; GIT_USER_EMAIL="$4"
 source ~/.env
 export ANTHROPIC_API_KEY="$CLAUDE_CODE_API_KEY"
 export PATH="$HOME/.local/bin:$PATH"
+
+git config --global user.name "$GIT_USER_NAME"
+git config --global user.email "$GIT_USER_EMAIL"
 
 # Install system dependencies (dnf is idempotent, always run to ensure nothing is missing)
 sudo dnf install -y python3.14 python3.14-pip git unzip tmux jq
@@ -120,8 +123,6 @@ for i in $(seq 1 "$NUM_AGENTS"); do
   else
     git clone "$REPO_URL" "$REPO_DIR"
   fi
-  [ -n "$GIT_USER_NAME" ] && git -C "$REPO_DIR" config user.name "$GIT_USER_NAME"
-  [ -n "$GIT_USER_EMAIL" ] && git -C "$REPO_DIR" config user.email "$GIT_USER_EMAIL"
   # Symlink shared benchmarks into each clone
   rm -rf "$REPO_DIR/benchmarks/max-sat-2024/mse24-anytime-weighted"
   mkdir -p "$REPO_DIR/benchmarks/max-sat-2024"
