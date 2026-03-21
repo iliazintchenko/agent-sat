@@ -31,7 +31,10 @@ REPO_URL="${REPO_URL:-$(git -C "$SCRIPT_DIR" remote get-url origin)}"
 GIT_USER_NAME="${GIT_USER_NAME:-$(git config user.name)}"
 GIT_USER_EMAIL="${GIT_USER_EMAIL:-$(git config user.email)}"
 
-# Ensure clone URL includes token for authenticated access on remote
+# Convert SSH URL to HTTPS and inject token for authenticated access on remote
+if [[ "$REPO_URL" == git@github.com:* ]]; then
+  REPO_URL="https://github.com/${REPO_URL#git@github.com:}"
+fi
 if [[ "$REPO_URL" == https://github.com/* && -n "${GITHUB_ACCESS_TOKEN:-}" && "$REPO_URL" != *@* ]]; then
   REPO_URL="${REPO_URL/https:\/\/github.com/https://${GITHUB_ACCESS_TOKEN}@github.com}"
 fi
@@ -49,7 +52,7 @@ fi
 ssh "$HOST" "test -f ~/.env" 2>/dev/null || scp "$SCRIPT_DIR/.env" "$HOST":~/
 
 # Provision and launch agents on remote
-ssh "$HOST" bash -s "$NUM_AGENTS" "$REPO_URL" "$GIT_USER_NAME" "$GIT_USER_EMAIL" <<'REMOTE'
+ssh "$HOST" "bash -s $(printf '%q %q %q %q' "$NUM_AGENTS" "$REPO_URL" "$GIT_USER_NAME" "$GIT_USER_EMAIL")" <<'REMOTE'
 set -e
 NUM_AGENTS="$1"; REPO_URL="$2"; GIT_USER_NAME="$3"; GIT_USER_EMAIL="$4"
 
