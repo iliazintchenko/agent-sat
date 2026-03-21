@@ -19,7 +19,7 @@ An autonomous AI agent that teaches itself to become the world's top expert on M
 
 ```
                               ┌────────────────────┐
-                              │     GitHub Repo    │
+                              │     Agent Brain    │
                               │                    │
                               │ expert.md          │
                               │ library/           │
