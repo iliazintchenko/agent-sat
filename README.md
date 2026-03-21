@@ -56,6 +56,26 @@ An autonomous AI agent that teaches itself to become the world's top expert on M
 
 Requires a `.env` file with `CLAUDE_CODE_API_KEY` and `GITHUB_ACCESS_TOKEN`. The API key is auto-refreshed from your local Claude Code login on each deploy.
 
+## Local setup
+
+```bash
+# Install Python dependencies
+pip install python-sat numpy
+
+# Download benchmarks from Helsinki (~2GB compressed)
+mkdir -p benchmarks/max-sat-2024/mse24-anytime-weighted
+curl -L -o /tmp/mse24.zip https://www.cs.helsinki.fi/group/coreo/MSE2024-instances/mse24-anytime-weighted.zip
+unzip -o /tmp/mse24.zip -d benchmarks/max-sat-2024/
+cd benchmarks/max-sat-2024 && for f in *.wcnf.xz; do xz -d "$f" && mv "${f%.xz}" mse24-anytime-weighted/; done
+cd ../..
+
+# Create .env with your API keys
+cat > .env << 'EOF'
+CLAUDE_CODE_API_KEY="your-key-here"
+GITHUB_ACCESS_TOKEN="your-token-here"
+EOF
+```
+
 Multiple agents can work on the same repo simultaneously, communicating through git — each agent pulls the latest solutions and expert knowledge, builds on what others found, and pushes its own improvements. No coordination needed beyond `git pull` and `git push`.
 
 ## Results so far
