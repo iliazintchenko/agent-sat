@@ -7,7 +7,7 @@
 # Detach:                Ctrl-b d
 # Reattach:              ssh -t ec2-user@44.211.98.254 'tmux attach -t maxsat'
 # Switch agent windows:  Ctrl-b n (next) / Ctrl-b p (prev) / Ctrl-b <number>
-# Kill:                  ssh ec2-user@44.211.98.254 'tmux kill-session -t maxsat'
+# Kill:                  ssh ec2-user@44.211.98.254 'pkill -9 -u ec2-user'
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
