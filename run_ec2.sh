@@ -50,20 +50,6 @@ if [[ "$REPO_URL" == https://github.com/* && -n "${GITHUB_ACCESS_TOKEN:-}" && "$
   REPO_URL="${REPO_URL/https:\/\/github.com/https://${GITHUB_ACCESS_TOKEN}@github.com}"
 fi
 
-# Refresh API key from local Claude Code login if available
-if [ -f "$HOME/.claude.json" ]; then
-  KEY=$(python3 -c "import json; print(json.load(open('$HOME/.claude.json'))['primaryApiKey'])")
-  if grep -q "^CLAUDE_CODE_API_KEY=" "$SCRIPT_DIR/.env" 2>/dev/null; then
-    if [[ "$(uname)" == "Darwin" ]]; then
-      sed -i '' "s|^CLAUDE_CODE_API_KEY=.*|CLAUDE_CODE_API_KEY=\"$KEY\"|" "$SCRIPT_DIR/.env"
-    else
-      sed -i "s|^CLAUDE_CODE_API_KEY=.*|CLAUDE_CODE_API_KEY=\"$KEY\"|" "$SCRIPT_DIR/.env"
-    fi
-  else
-    echo "CLAUDE_CODE_API_KEY=\"$KEY\"" >> "$SCRIPT_DIR/.env"
-  fi
-fi
-
 scp "$SCRIPT_DIR/.env" "$HOST":~/
 
 # If already running, just reattach
@@ -77,7 +63,7 @@ set -e
 NUM_AGENTS="$1"; REPO_URL="$2"; GIT_USER_NAME="$3"; GIT_USER_EMAIL="$4"
 
 source ~/.env
-export ANTHROPIC_API_KEY="$CLAUDE_CODE_API_KEY"
+export CLAUDE_CODE_OAUTH_TOKEN="$CLAUDE_CODE_OAUTH_TOKEN"
 export PATH="$HOME/.local/bin:$PATH"
 
 git config --global user.name "$GIT_USER_NAME"
@@ -102,10 +88,10 @@ python3.14 -m pip install -q python-sat numpy 2>/dev/null || true
 mkdir -p ~/.claude
 printf '%s\n' '{"permissions":{"defaultMode":"bypassPermissions"},"model":"opus[1m]","effortLevel":"max","skipDangerousModePermissionPrompt":true}' > ~/.claude/settings.json
 
-# Ensure ANTHROPIC_API_KEY is set for all future shells (including tmux panes)
-grep -q 'ANTHROPIC_API_KEY' ~/.bashrc 2>/dev/null || cat >> ~/.bashrc <<'BASHRC'
+# Ensure CLAUDE_CODE_OAUTH_TOKEN is set for all future shells (including tmux panes)
+grep -q 'CLAUDE_CODE_OAUTH_TOKEN' ~/.bashrc 2>/dev/null || cat >> ~/.bashrc <<'BASHRC'
 source ~/.env 2>/dev/null
-export ANTHROPIC_API_KEY="$CLAUDE_CODE_API_KEY"
+export CLAUDE_CODE_OAUTH_TOKEN="$CLAUDE_CODE_OAUTH_TOKEN"
 export PATH="$HOME/.local/bin:$PATH"
 BASHRC
 

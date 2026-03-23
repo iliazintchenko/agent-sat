@@ -54,7 +54,13 @@ An autonomous AI agent that teaches itself to become the world's top expert on M
 ./run.sh --host ec2-user@<ip> --agents 3
 ```
 
-Requires a `.env` file with `CLAUDE_CODE_API_KEY` and `GITHUB_ACCESS_TOKEN`. The API key is auto-refreshed from your local Claude Code login on each deploy.
+Requires a `.env` file with `CLAUDE_CODE_OAUTH_TOKEN` and `GITHUB_ACCESS_TOKEN`.
+
+To generate the OAuth token (uses your Claude Pro/Max subscription, not API billing):
+```bash
+claude setup-token
+```
+This creates a long-lived token (valid 1 year) that lets headless EC2 agents bill against your subscription. It does not rotate or invalidate existing tokens.
 
 ## Local setup
 
@@ -69,9 +75,9 @@ unzip -o /tmp/mse24.zip -d benchmarks/max-sat-2024/
 cd benchmarks/max-sat-2024 && for f in *.wcnf.xz; do xz -d "$f" && mv "${f%.xz}" mse24-anytime-weighted/; done
 cd ../..
 
-# Create .env with your API keys
+# Create .env with your tokens
 cat > .env << 'EOF'
-CLAUDE_CODE_API_KEY="your-key-here"
+CLAUDE_CODE_OAUTH_TOKEN="your-token-here"   # from `claude setup-token`
 GITHUB_ACCESS_TOKEN="your-token-here"
 EOF
 ```
