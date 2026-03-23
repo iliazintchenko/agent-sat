@@ -84,19 +84,19 @@ git config --global user.name "$GIT_USER_NAME"
 git config --global user.email "$GIT_USER_EMAIL"
 
 # Install system dependencies (dnf is idempotent, always run to ensure nothing is missing)
-sudo dnf install -y python3.14 python3.14-pip git unzip tmux jq
+sudo dnf install -y python3.12 python3.12-pip python3.12-devel git unzip tmux jq
 
 # Install Claude Code if not present
 if ! command -v claude &> /dev/null; then
   curl -fsSL https://claude.ai/install.sh | bash
 fi
 
-# Make python3.14 the default (symlink in /usr/local/bin to avoid breaking dnf)
-sudo ln -sf /usr/bin/python3.14 /usr/local/bin/python
-sudo ln -sf /usr/bin/python3.14 /usr/local/bin/python3
+# Make python3.12 the default (symlink in /usr/local/bin to avoid breaking dnf)
+sudo ln -sf /usr/bin/python3.12 /usr/local/bin/python
+sudo ln -sf /usr/bin/python3.12 /usr/local/bin/python3
 
 # Install Python dependencies
-python3.14 -m pip install -q python-sat numpy 2>/dev/null || true
+python3.12 -m pip install -q python-sat numpy 2>/dev/null || true
 
 # Claude Code settings
 mkdir -p ~/.claude
