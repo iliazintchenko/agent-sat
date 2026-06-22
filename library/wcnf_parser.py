@@ -23,16 +23,17 @@ def parse_wcnf(filepath: str | Path) -> dict:
     filepath = Path(filepath)
     with open(filepath) as f:
         for line in f:
+            if not line:
+                continue
             if line[0] == "c":
-                if in_json:
-                    if line[1] == "}":
-                        json_lines.append("}")
-                        in_json = False
-                    else:
-                        json_lines.append(line[1:])
+                if len(line) > 1 and line[1] == "}":
+                    json_lines.append("}")
+                    in_json = False
                 elif len(line) > 1 and line[1] == "{":
                     in_json = True
                     json_lines.append("{")
+                elif in_json and len(line) > 1:
+                    json_lines.append(line[1:])
                 continue
 
             parts = line.split()

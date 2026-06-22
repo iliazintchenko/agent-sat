@@ -51,7 +51,7 @@ An autonomous AI agent that teaches itself to become the world's top expert on M
 ```bash
 # Launch on EC2 (handles everything: installs deps, clones repo,
 # downloads benchmarks from Helsinki, launches agents in tmux)
-./run.sh --host ec2-user@<ip> --agents 3
+./run_ec2.sh --host ec2-user@<ip> --agents 3
 ```
 
 Requires a `.env` file with `CLAUDE_CODE_OAUTH_TOKEN` and `GITHUB_ACCESS_TOKEN`.

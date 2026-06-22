@@ -553,7 +553,6 @@ def randomized_greedy(nvars, hard_clauses, soft_clauses, timeout=240, n_trials=1
     if solvers is None:
         solvers = ['cd19', 'g4']
 
-    import random
     from library.wcnf_parser import evaluate_cost
 
     nsoft = len(soft_clauses)
